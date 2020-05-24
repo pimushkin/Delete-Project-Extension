@@ -109,24 +109,36 @@ namespace lab5Extension
 
             if (messageBoxResult != 1) return;
             {
-                foreach (var project in activeProjects)
+                try
                 {
-                    try
+                    var solutionPath = Path.GetDirectoryName(projectInterface.Solution.FileName)?.TrimEnd('\\');
+                    foreach (var project in activeProjects)
                     {
                         string projectPath = Path.GetDirectoryName(project.FileName)?.TrimEnd('\\');
                         projectInterface.Solution.Remove(project);
+                        if (string.Equals(solutionPath, projectPath, StringComparison.OrdinalIgnoreCase))
+                        {
+                            VsShellUtilities.ShowMessageBox(
+                                package,
+                                "An error occurred during deletion because the project directory matches the solution directory.",
+                                null,
+                                OLEMSGICON.OLEMSGICON_WARNING,
+                                OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                            continue;
+                        }
                         FileSystem.DeleteDirectory(projectPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin, UICancelOption.DoNothing);
                     }
-                    catch (Exception exception)
-                    {
-                        VsShellUtilities.ShowMessageBox(
-                            package,
-                            exception.Message,
-                            null,
-                            OLEMSGICON.OLEMSGICON_CRITICAL,
-                            OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                            OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-                    }
+                }
+                catch (Exception exception)
+                {
+                    VsShellUtilities.ShowMessageBox(
+                        package,
+                        exception.Message,
+                        null,
+                        OLEMSGICON.OLEMSGICON_CRITICAL,
+                        OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                        OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 }
             }
         }
