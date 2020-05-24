@@ -111,9 +111,22 @@ namespace lab5Extension
             {
                 foreach (var project in activeProjects)
                 {
-                    string projectPath = Path.GetDirectoryName(project.FileName)?.TrimEnd('\\');
-                    projectInterface.Solution.Remove(project);
-                    FileSystem.DeleteDirectory(projectPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin, UICancelOption.DoNothing);
+                    try
+                    {
+                        string projectPath = Path.GetDirectoryName(project.FileName)?.TrimEnd('\\');
+                        projectInterface.Solution.Remove(project);
+                        FileSystem.DeleteDirectory(projectPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin, UICancelOption.DoNothing);
+                    }
+                    catch (Exception exception)
+                    {
+                        VsShellUtilities.ShowMessageBox(
+                            package,
+                            exception.Message,
+                            null,
+                            OLEMSGICON.OLEMSGICON_CRITICAL,
+                            OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                            OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                    }
                 }
             }
         }
