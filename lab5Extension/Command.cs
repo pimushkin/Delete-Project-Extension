@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using EnvDTE;
@@ -107,8 +109,10 @@ namespace lab5Extension
                 OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL,
                 OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
 
+            var exceptions = new Dictionary<dynamic, Exception>();
             if (messageBoxResult != 1) return;
             {
+                var error = false;
                 var solutionPath = Path.GetDirectoryName(projectInterface.Solution.FileName)?.TrimEnd('\\');
                 foreach (var project in activeProjects)
                 {
@@ -117,30 +121,30 @@ namespace lab5Extension
                         string projectPath = Path.GetDirectoryName(project.FileName)?.TrimEnd('\\');
                         if (string.Equals(solutionPath, projectPath, StringComparison.OrdinalIgnoreCase))
                         {
-                            VsShellUtilities.ShowMessageBox(
-                                package,
-                                "An error occurred during deletion because the project directory matches the solution directory.",
-                                null,
-                                OLEMSGICON.OLEMSGICON_WARNING,
-                                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-                            continue;
+                            exceptions.Add(project, new Exception("An error occurred during deletion because the project directory matches the solution directory."));
                         }
-                        projectInterface.Solution.Remove(project);
-                        FileSystem.DeleteDirectory(projectPath, UIOption.OnlyErrorDialogs,
-                            RecycleOption.SendToRecycleBin, UICancelOption.DoNothing);
+                        else
+                        {
+                            projectInterface.Solution.Remove(project);
+                            FileSystem.DeleteDirectory(projectPath, UIOption.OnlyErrorDialogs,
+                                RecycleOption.SendToRecycleBin, UICancelOption.DoNothing);
+                        }
                     }
                     catch (Exception exception)
                     {
-                        VsShellUtilities.ShowMessageBox(
-                            package,
-                            exception.Message,
-                            null,
-                            OLEMSGICON.OLEMSGICON_CRITICAL,
-                            OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                            OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                        error = true;
+                        exceptions.Add(project, exception);
                     }
                 }
+                if (!exceptions.Any()) return;
+                var resultMessage = string.Join(Environment.NewLine, exceptions.Select(x => $"'{x.Key.Name}': {x.Value.Message}"));
+                VsShellUtilities.ShowMessageBox(
+                    package,
+                    resultMessage,
+                    null,
+                    error ? OLEMSGICON.OLEMSGICON_CRITICAL : OLEMSGICON.OLEMSGICON_WARNING,
+                    OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
             }
         }
     }
