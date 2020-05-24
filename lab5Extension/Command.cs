@@ -11,6 +11,7 @@ using Microsoft;
 using Microsoft.VisualBasic.FileIO;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using lab5Extension.Properties;
 using Task = System.Threading.Tasks.Task;
 
 namespace lab5Extension
@@ -98,7 +99,9 @@ namespace lab5Extension
             var projectInterface = (DTE)await ServiceProvider.GetServiceAsync(typeof(DTE));
             Assumes.Present(projectInterface);
             var activeProjects = (dynamic[])projectInterface.ActiveSolutionProjects;
-            const string message = "The project(s) and all content will be deleted from the computer.";
+            var message = activeProjects.Length == 1
+                ? string.Format(Resources.DeletingProjectMessage, $"'{activeProjects.First().Name}'")
+                : string.Format(Resources.DeletingProjectsMessage, string.Join(", ", activeProjects.Select(x => $"'{x.Name}'")));
 
             // Show a message box to prove we were here
             var messageBoxResult = VsShellUtilities.ShowMessageBox(
@@ -121,7 +124,7 @@ namespace lab5Extension
                         string projectPath = Path.GetDirectoryName(project.FileName)?.TrimEnd('\\');
                         if (string.Equals(solutionPath, projectPath, StringComparison.OrdinalIgnoreCase))
                         {
-                            exceptions.Add(project, new Exception("An error occurred during deletion because the project directory matches the solution directory."));
+                            exceptions.Add(project, new Exception(Resources.SameDirectoryErrorMessage));
                         }
                         else
                         {
