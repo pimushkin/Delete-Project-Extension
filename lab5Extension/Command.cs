@@ -115,7 +115,6 @@ namespace lab5Extension
                     try
                     {
                         string projectPath = Path.GetDirectoryName(project.FileName)?.TrimEnd('\\');
-                        projectInterface.Solution.Remove(project);
                         if (string.Equals(solutionPath, projectPath, StringComparison.OrdinalIgnoreCase))
                         {
                             VsShellUtilities.ShowMessageBox(
@@ -127,7 +126,7 @@ namespace lab5Extension
                                 OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                             continue;
                         }
-
+                        projectInterface.Solution.Remove(project);
                         FileSystem.DeleteDirectory(projectPath, UIOption.OnlyErrorDialogs,
                             RecycleOption.SendToRecycleBin, UICancelOption.DoNothing);
                     }
