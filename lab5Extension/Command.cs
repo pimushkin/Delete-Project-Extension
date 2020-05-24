@@ -109,10 +109,10 @@ namespace lab5Extension
 
             if (messageBoxResult != 1) return;
             {
-                try
+                var solutionPath = Path.GetDirectoryName(projectInterface.Solution.FileName)?.TrimEnd('\\');
+                foreach (var project in activeProjects)
                 {
-                    var solutionPath = Path.GetDirectoryName(projectInterface.Solution.FileName)?.TrimEnd('\\');
-                    foreach (var project in activeProjects)
+                    try
                     {
                         string projectPath = Path.GetDirectoryName(project.FileName)?.TrimEnd('\\');
                         projectInterface.Solution.Remove(project);
@@ -127,18 +127,20 @@ namespace lab5Extension
                                 OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                             continue;
                         }
-                        FileSystem.DeleteDirectory(projectPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin, UICancelOption.DoNothing);
+
+                        FileSystem.DeleteDirectory(projectPath, UIOption.OnlyErrorDialogs,
+                            RecycleOption.SendToRecycleBin, UICancelOption.DoNothing);
                     }
-                }
-                catch (Exception exception)
-                {
-                    VsShellUtilities.ShowMessageBox(
-                        package,
-                        exception.Message,
-                        null,
-                        OLEMSGICON.OLEMSGICON_CRITICAL,
-                        OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                        OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                    catch (Exception exception)
+                    {
+                        VsShellUtilities.ShowMessageBox(
+                            package,
+                            exception.Message,
+                            null,
+                            OLEMSGICON.OLEMSGICON_CRITICAL,
+                            OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                            OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                    }
                 }
             }
         }
