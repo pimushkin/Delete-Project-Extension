@@ -99,6 +99,17 @@ namespace lab5Extension
             var projectInterface = (DTE)await ServiceProvider.GetServiceAsync(typeof(DTE));
             Assumes.Present(projectInterface);
             var activeProjects = (dynamic[])projectInterface.ActiveSolutionProjects;
+            if (activeProjects.Length == 0)
+            {
+                VsShellUtilities.ShowMessageBox(
+                    package,
+                    Resources.MissingProjectErrorMessage,
+                    null,
+                    OLEMSGICON.OLEMSGICON_WARNING,
+                    OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                return;
+            }
             var message = activeProjects.Length == 1
                 ? string.Format(Resources.DeletingProjectMessage, $"'{activeProjects.First().Name}'")
                 : string.Format(Resources.DeletingProjectsMessage, string.Join(", ", activeProjects.Select(x => $"'{x.Name}'")));

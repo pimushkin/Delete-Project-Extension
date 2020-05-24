@@ -123,6 +123,9 @@
   <data name="DeletingProjectsMessage" xml:space="preserve">
     <value>Projects {0} and all their contents will be deleted.</value>
   </data>
+  <data name="MissingProjectErrorMessage" xml:space="preserve">
+    <value>There is no project to delete.</value>
+  </data>
   <data name="SameDirectoryErrorMessage" xml:space="preserve">
     <value>An error occurred during deletion because the project directory matches the solution directory.</value>
   </data>

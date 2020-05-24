@@ -79,6 +79,15 @@ namespace lab5Extension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There is no project to delete..
+        /// </summary>
+        internal static string MissingProjectErrorMessage {
+            get {
+                return ResourceManager.GetString("MissingProjectErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An error occurred during deletion because the project directory matches the solution directory..
         /// </summary>
         internal static string SameDirectoryErrorMessage {

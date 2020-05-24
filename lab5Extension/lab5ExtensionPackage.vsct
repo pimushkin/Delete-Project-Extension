@@ -54,9 +54,9 @@
           If you do not want an image next to your command, remove the Icon node /> -->
       <Button guid="guidlab5ExtensionPackageCmdSet" id="CommandId" priority="0x0100" type="Button">
         <Parent guid="guidlab5ExtensionPackageCmdSet" id="MyMenuGroup" />
-        <Icon guid="guidImages" id="bmpPic1" />
+        <Icon guid="guidImages" id="bmpPicX" />
         <Strings>
-          <ButtonText>Invoke Command</ButtonText>
+          <ButtonText>Delete Project(s)</ButtonText>
         </Strings>
       </Button>
     </Buttons>
